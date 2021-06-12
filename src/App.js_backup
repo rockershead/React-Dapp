@@ -1,0 +1,150 @@
+import { useStoreApi } from "./store/storeApi";
+import useWeb3 from "../utils/useWeb3";
+import { Button, TextField } from "@material-ui/core";
+
+import "./App.css";
+import EthLogo from "./images/ethereum.png";
+
+import uuid from "uuid/v4";
+//const BigInteger = require('jsbn').BigInteger;
+//import BigInteger from 'BigInt'
+
+const myContract=require('./contracts/houseLeaseConfig.json');
+
+function App() {
+  const { balance, address, message, setAddress, setBalance,settokenBalance,tokenBalance } = useStoreApi();
+  const web3 = useWeb3();
+
+  // get user account on button click
+  const getUserAccount = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.enable();
+        web3.eth.getAccounts().then(accounts => {
+          setAddress(accounts[0]);
+          updateBalance(accounts[0]);
+          updateTokenBalance(accounts[0]);
+          
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      alert("Metamask extensions not detected!");
+    }
+  };
+
+  const updateBalance = async fromAddress => {
+    await web3.eth.getBalance(fromAddress).then(value => {
+      setBalance(web3.utils.fromWei(value, "ether"));
+    });
+  };
+
+  const updateTokenBalance = async fromAddress => {
+    const tokenInst = new web3.eth.Contract(myContract.leaseTokenAbi, myContract.lease_token_contract_address);
+    const token_balance = await tokenInst.methods.balanceOf(fromAddress).call()
+    settokenBalance(web3.utils.fromWei(token_balance, "ether"))
+  };
+
+  const createLease=async e=>{
+    
+  e.preventDefault();
+  const name=e.target[0].value
+  const house_addr=e.target[1].value
+  const lease_time=e.target[2].value
+  const price=e.target[3].value
+  
+  //abi and contract address
+  var contract=new web3.eth.Contract(myContract.abi,myContract.contract_address)
+  
+  const uid=uuid()
+  
+  await contract.methods.createLease(name,house_addr,lease_time,10000,uid).send({
+  from:address
+  })
+
+  //updateBalance(address);
+  
+  
+  
+  
+  
+  
+   var res1=await contract.methods.getLeaseData(uid).call()
+  console.log(res1)
+  
+  
+  
+      
+  
+  
+  }
+
+  
+
+  return (
+    <div className="App">
+      <header className="content">
+       
+        <h1>
+         House Leasing
+        </h1>
+        {address ? (
+          <>
+            <p> Your account: {address}</p>
+            <p> Ether Balance: {balance} </p>
+            <p> LTOK Balance: {tokenBalance} </p>
+          </>
+        ) : null}
+        <Button
+          onClick={() => getUserAccount()}
+          variant="outlined"
+          color="primary"
+        >
+          Connect your wallet
+        </Button>
+       <p></p>
+       <p></p>
+        <form onSubmit={e => createLease(e)}>
+         <p> <TextField
+            required
+            label="Name"
+            inputProps={{ step: "any" }}
+            type="text"
+            variant="filled"
+          /></p>
+          <p><TextField 
+          required 
+          label="House Address" 
+          variant="filled"
+          type="text" 
+          /></p>
+          <p><TextField
+            required
+            label="End of lease time"
+            inputProps={{ step: "any" }}
+            type="number"
+            variant="filled"
+          /></p>
+          <p><TextField 
+          required 
+          label="Amount of LTOK" 
+          variant="filled" 
+          type="number"
+          /></p>
+          
+          <Button
+            style={{ margin: "10px" }}
+            type="submit"
+            variant="outlined"
+            color="default"
+          >
+            Create Lease
+          </Button>
+        </form>
+      </header>
+    </div>
+  );
+}
+
+export default App;
