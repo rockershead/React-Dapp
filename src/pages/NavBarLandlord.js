@@ -7,7 +7,7 @@ const NavBarOwner  = () => {
      <nav className="navbar">
          <h1>House Lease</h1>
          <div className="links">
-         <a href="/">Home</a>
+         <a href="/home">Home</a>
          <Link to="/createLease">Create Lease</Link>
          
          <Link to="/viewOwnerLease">My Leases</Link>

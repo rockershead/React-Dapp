@@ -3,8 +3,10 @@ import useWeb3 from "../utils/useWeb3";
 import { Button, TextField } from "@material-ui/core";
 import {useEffect,useState} from 'react';
 import Web3 from "web3";
-import NavBarOwner from "../pages/NavBarLandlord";
-
+import NavBarOwner from "./NavBarLandlord";
+import ObjectCard from '../components/card'
+import LayoutLandlord from "../components/LayoutLandlord";
+const moment=require('moment');
 
 import uuid from "uuid/v4";
 
@@ -18,6 +20,9 @@ const ViewOwnerLeases = () => {
     var web3;
     
     const [final_arr_object,setArr]=useState(null);
+
+
+    
 
     const listOwnerLease=async()=>{
 
@@ -52,8 +57,8 @@ const ViewOwnerLeases = () => {
         promises.push(contract.methods.getLeaseData(array.leaseId).call().then(lease_info=>{
       
           id=id+1
-    
-         var new_object={"id":id,"leaseId":array.leaseId,"home_addr":lease_info.home_addr,"lease_expiry":lease_info.timestamp,"price":lease_info.value}
+          var datetime=moment.unix(lease_info.timestamp).format("dddd MMMM Do YYYY, h:mm:ss a")
+         var new_object={"id":id,"leaseId":array.leaseId,"home_addr":lease_info.home_addr,"lease_expiry":datetime,"price":lease_info.value}
         arr_object.push(new_object)
 
 
@@ -71,6 +76,13 @@ const ViewOwnerLeases = () => {
         
         
         }
+
+
+        const handleDelete = async (id) => {
+        
+            const newObject = final_arr_object.filter(object => object.id != id)
+            setArr(newObject)
+          }
 
 
     const setDoorCode=async(e,lease_id)=>{
@@ -105,57 +117,29 @@ const ViewOwnerLeases = () => {
     return (  
 
 
-        
+      <LayoutLandlord>
         <div className="home">
-         <NavBarOwner />
+         
+         <br></br>
+         <br></br>
          {
        final_arr_object&&
        final_arr_object.map(object => (
-        <div className="blog-preview" key={object.id} >
-          <h2>{ object.leaseId }</h2>
-          <p> { object.home_addr }</p>
-          <p> { object.lease_expiry }</p>
-          <p> { object.price/Math.pow(10,18) }</p>
-          <p>
-        
-        <Button
-          //onClick={() =>  }
-          variant="outlined"
-          color="primary"
-          
-        >
-          Delete Lease
-        </Button></p>
-         &nbsp;&nbsp;&nbsp;
-         <form onSubmit={e => setDoorCode(e,object.leaseId)}>
-        <p>
-        <TextField
-            required
-            label="Door Code"
-            inputProps={{ step: "any" }}
-            type="text"
-            variant="filled"
-          />
-          &nbsp;&nbsp;&nbsp;
-        <Button
-          type="submit"
-          variant="outlined"
-          color="primary"
-          
-        >
-          Send Door Code
-        </Button>
-        
-        
-        
-        </p>
-        
-        </form>
-        </div>
-      ))}
+
+
+        <  ObjectCard note={object} handleDelete={handleDelete} setDoorCode={setDoorCode} />
+       ))
+       
+       
+       }
+             
+             
+         
+         
+         
      
     </div>
-
+    </LayoutLandlord>
      
 
 

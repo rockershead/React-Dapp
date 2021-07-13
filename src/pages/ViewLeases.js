@@ -1,9 +1,11 @@
 import { useStoreApi } from "../store/storeApi";
 import useWeb3 from "../utils/useWeb3";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, makeStyles} from "@material-ui/core";
 import {useEffect,useState} from 'react';
 import Web3 from "web3";
 import NavBarTenant from "../pages/NavBarTenant";
+import LayoutTenant from "../components/LayoutTenant";
+const moment=require('moment');
 
 
 import uuid from "uuid/v4";
@@ -11,7 +13,31 @@ import uuid from "uuid/v4";
 const myContract=require('../contracts/houseLeaseConfig.json');
 
 
+const useStyles = makeStyles((theme) =>({
+  btn: {
+    //fontSize: 60,
+    backgroundColor: '#33ffe0',
+    '&:hover': {
+      background: 'grey'
+    },
+    color:'green',
+    
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  }
+  //title: {
+    //textDecoration: 'underline',
+    //marginBottom: 20,
+ // }
+}))
+
+
 const ViewLeases = () => {
+  const classes = useStyles()
     
     const { balance, address, message, setAddress, setBalance,settokenBalance,tokenBalance } = useStoreApi();
     const web3js = useWeb3();
@@ -51,8 +77,9 @@ const ViewLeases = () => {
         promises.push(contract.methods.getLeaseData(leaseId).call().then(lease_info=>{
       
           id=id+1
-    
-         var new_object={"id":id,"leaseId":leaseId,"uid":lease_info.uid,"landlordName":lease_info.landlordName,"home_addr":lease_info.home_addr,"lease_expiry":lease_info.timestamp,"price":lease_info.value}
+        
+         var datetime=moment.unix(lease_info.timestamp).format("dddd MMMM Do YYYY, h:mm:ss a")
+         var new_object={"id":id,"leaseId":leaseId,"uid":lease_info.uid,"landlordName":lease_info.landlordName,"home_addr":lease_info.home_addr,"lease_expiry":datetime,"price":lease_info.value}
         arr_object.push(new_object)
 
 
@@ -98,9 +125,9 @@ const ViewLeases = () => {
     return (  
 
 
-        
-        <div className="home">
-         <NavBarTenant />
+        <LayoutTenant>
+        <div className={classes.paper} >
+         
          {
        final_arr_object&&
        final_arr_object.map(object => (
@@ -125,7 +152,7 @@ const ViewLeases = () => {
      
     </div>
 
-     
+    </LayoutTenant>
 
 
 

@@ -4,6 +4,7 @@ import { Button, TextField } from "@material-ui/core";
 import NavBarTenant from "./NavBarTenant";
 import {useEffect,useState} from 'react';
 import Web3 from "web3";
+import LayoutTenant from "../components/LayoutTenant";
 
 
 import uuid from "uuid/v4";
@@ -57,15 +58,15 @@ const GetDoorCode = () => {
     return (  
 
 
-
+      <LayoutTenant>
         <div className="home">
-       <NavBarTenant />
+       
        <p>
            {door_code}
        </p>
      
     </div>
-
+  </LayoutTenant>
      
 
 

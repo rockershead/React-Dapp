@@ -3,6 +3,7 @@ import useWeb3 from "../utils/useWeb3";
 import { Button, TextField } from "@material-ui/core";
 import {useEffect,useState} from 'react';
 import NavBarOwner from "./NavBarLandlord";
+import LayoutLandlord from "../components/LayoutLandlord";
 
 
 
@@ -21,14 +22,14 @@ const LandlordPage = () => {
     return (  
 
 
-        
+        <LayoutLandlord>
         <div className="home">
-      <NavBarOwner />
+      
          <p>Welcome to House Lease.Lets create your lease.</p>
      
     </div>
 
-     
+    </LayoutLandlord>
 
 
 
