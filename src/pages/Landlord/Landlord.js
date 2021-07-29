@@ -1,15 +1,15 @@
-import { useStoreApi } from "../store/storeApi";
-import useWeb3 from "../utils/useWeb3";
+import { useStoreApi } from "../../store/storeApi";
+import useWeb3 from "../../utils/useWeb3";
 import { Button, TextField } from "@material-ui/core";
 import {useEffect,useState} from 'react';
 import NavBarOwner from "./NavBarLandlord";
-import LayoutLandlord from "../components/LayoutLandlord";
+import LayoutLandlord from "../../components/LayoutLandlord";
 
 
 
 import uuid from "uuid/v4";
 
-const myContract=require('../contracts/houseLeaseConfig.json');
+const myContract=require('../../contracts/houseLeaseConfig.json');
 
 
 const LandlordPage = () => {

@@ -1,16 +1,16 @@
-import { useStoreApi } from "../store/storeApi";
-import useWeb3 from "../utils/useWeb3";
+import { useStoreApi } from "../../store/storeApi";
+import useWeb3 from "../../utils/useWeb3";
 import { Button, TextField } from "@material-ui/core";
 import {useEffect,useState} from 'react';
 import Web3 from "web3";
 import NavBarOwner from "./NavBarLandlord";
-import ObjectCard from '../components/card'
-import LayoutLandlord from "../components/LayoutLandlord";
+import LeaseCard from '../../components/LeaseCard'
+import LayoutLandlord from "../../components/LayoutLandlord";
 const moment=require('moment');
 
 import uuid from "uuid/v4";
 
-const myContract=require('../contracts/houseLeaseConfig.json');
+const myContract=require('../../contracts/houseLeaseConfig.json');
 
 
 const ViewOwnerLeases = () => {
@@ -47,18 +47,25 @@ const ViewOwnerLeases = () => {
         var id=0
         var promises=[];
         var arr_object=[];
-        const owner_uid="3BmVMJhUffhBdL0aOvYuBzngIRp1"
-
-        var res1=await contract.methods.listLandlordLeaseIds(owner_uid).call()    //array of leaseIds
-
+        var isTenant;
+        
+      //the owner who calls this function can only see his leases.
+         //functions with msg.sender need to put call{from:address}!!!
+        var res1=await contract.methods.listLandlordLeaseIds().call({from:address})    //array of owner_lease_id struct
+        
 
         res1.forEach( array=> {
 
-        promises.push(contract.methods.getLeaseData(array.leaseId).call().then(lease_info=>{
+        promises.push(contract.methods.getLeaseData(array.leaseId).call().then(async lease_info=>{
       
           id=id+1
           var datetime=moment.unix(lease_info.timestamp).format("dddd MMMM Do YYYY, h:mm:ss a")
-         var new_object={"id":id,"leaseId":array.leaseId,"home_addr":lease_info.home_addr,"lease_expiry":datetime,"price":lease_info.value}
+          var res3=await contract.methods.listTenants(array.leaseId).call({from:address})   //check if got tenants
+          if(res3.length==0)
+          { isTenant=false}
+          else
+          {isTenant=true}
+         var new_object={"id":id,"leaseId":array.leaseId,"home_addr":lease_info.home_addr,"lease_expiry":datetime,"price":lease_info.value,"isTenant":isTenant}
         arr_object.push(new_object)
 
 
@@ -78,27 +85,31 @@ const ViewOwnerLeases = () => {
         }
 
 
-        const handleDelete = async (id) => {
-        
-            const newObject = final_arr_object.filter(object => object.id != id)
+        const handleDelete = async (id,leaseId) => {
+
+          if (window.ethereum) {
+            // set up a new provider
+            try {
+               web3 = new Web3(window.ethereum);
+            } catch (error) {
+              console.error(error);
+            }
+          } else if (window.web3) {
+             web3 = new Web3(window.web3);
+          }
+          const newObject = final_arr_object.filter(object => object.id != id)
             setArr(newObject)
+              //abi and contract address
+              var contract=new web3.eth.Contract(myContract.abi,myContract.contract_address)
+              await contract.methods.deleteLandlordLeaseId(leaseId).send({
+                from:address
+                })
+        
+            
           }
 
 
-    const setDoorCode=async(e,lease_id)=>{
-
-        e.preventDefault();
-        const door_code=e.target[0].value
-        var contract=new web3js.eth.Contract(myContract.abi,myContract.contract_address)
-
-
-
-        await contract.methods.giveDoorCode(door_code,lease_id).send({
-        from:address
-            })
-        
-        
-        }
+   
 
     
     
@@ -127,14 +138,15 @@ const ViewOwnerLeases = () => {
        final_arr_object.map(object => (
 
 
-        <  ObjectCard note={object} handleDelete={handleDelete} setDoorCode={setDoorCode} />
+        <  LeaseCard note={object} handleDelete={handleDelete}  />
+        
        ))
        
        
        }
              
              
-         
+             
          
          
      

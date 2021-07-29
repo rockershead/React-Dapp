@@ -1,14 +1,14 @@
-import { useStoreApi } from "../store/storeApi";
-import useWeb3 from "../utils/useWeb3";
-import { Button, TextField,makeStyles} from "@material-ui/core";
+import { useStoreApi } from "../../store/storeApi";
+import useWeb3 from "../../utils/useWeb3";
+import { Button, TextField,makeStyles,DateTimePicker} from "@material-ui/core";
 import NavBarOwner from "./NavBarLandlord";
-import LayoutLandlord from "../components/LayoutLandlord";
+import LayoutLandlord from "../../components/LayoutLandlord";
 
 import uuid from "uuid/v4";
 const moment=require('moment');
+var bigInt = require("big-integer");
 
-
-const myContract=require('../contracts/houseLeaseConfig.json');
+const myContract=require('../../contracts/houseLeaseConfig.json');
 const useStyles = makeStyles((theme) =>({
   field: {
     marginTop: 20,
@@ -44,27 +44,34 @@ const CreateLease = () => {
     const { balance, address, message, setAddress, setBalance,settokenBalance,tokenBalance } = useStoreApi();
     const web3 = useWeb3();
 
+  
+	
+// disable past dates
+const yesterday = moment().subtract(1, 'day');
+const disablePastDt = current => {
+  return current.isAfter(yesterday);
+};
+
     const createLease=async e=>{
     
         e.preventDefault();
         const name=e.target[0].value
         const house_addr=e.target[2].value
         const lease_time=e.target[4].value       //need to convert to unix time
-        const price=e.target[6].value
-
-        console.log(name)
-        console.log(house_addr)
-        console.log(lease_time)
-        console.log(price)
+        const price=bigInt((e.target[6].value)*(10**18))   //bigInt library returns an object
+  
+        
+        console.log(price.value)
+       
 
         const unix_lease_time=moment(lease_time ,'YYYY-MM-DDTHH:mm').unix()
         //abi and contract address
         var contract=new web3.eth.Contract(myContract.abi,myContract.contract_address)
-        const owner_uid="3BmVMJhUffhBdL0aOvYuBzngIRp1"
-        console.log(unix_lease_time)
+        
+        //console.log(unix_lease_time)
         const uid=uuid()
         
-        await contract.methods.createLease(owner_uid,name,house_addr,unix_lease_time,price,uid).send({
+        await contract.methods.createLease(name,house_addr,unix_lease_time,price.value,uid).send({
         from:address
         })
       
@@ -114,8 +121,11 @@ const CreateLease = () => {
           <p><TextField
           className={classes.field}
             required
+            
             label="Lease Expiry Payment"
-            inputProps={{ step: "any" }}
+            //inputProps={{ step:"any",min:"2021-07-13T00:00" }}
+            //inputProps={{ step:"any",min:moment(new Date()).add(2, 'days').format("YYYY-MM-DDTHH:mm") }}
+            inputProps={{ step:"any",min:moment(new Date()).add(48, 'hours').format("YYYY-MM-DDTHH:mm") }}
             type="datetime-local"
             variant="outlined"
             fullWidth

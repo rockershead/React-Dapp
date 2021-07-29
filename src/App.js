@@ -3,20 +3,21 @@ import { Button, TextField } from "@material-ui/core";
 import NavBar from "./pages/NavBarGeneral";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import CreateLease from "./pages/CreateLease";
-import ViewLeases from "./pages/ViewLeases";
-import TenantPage from "./pages/Tenant";
-import LandlordPage from "./pages/Landlord";
-import ViewOwnerLease from "./pages/ViewOwnerLease";
-import GetDoorCode from "./pages/GetDoorCode";
+import CreateLease from "./pages/Landlord/CreateLease";
+import ViewLeases from "./pages/Tenant/ViewLeases";
+import TenantPage from "./pages/Tenant/Tenant";
+import LandlordPage from "./pages/Landlord/Landlord";
+import ViewOwnerLease from "./pages/Landlord/ViewOwnerLease";
+
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 //import { AuthProvider } from "./store/AuthContext"
 import {PrivateRoute} from "./components/PrivateRoute"
 import ImageDisplay from "./pages/ImageDisplay"
-
-
+import ViewTenants from "./pages/Landlord/ViewTenants"
+import ViewTenantLease from "./pages/Tenant/ViewTenantLease"
+import TenantPayment from "./pages/Tenant/TenantPayment"
 
 //const BigInteger = require('jsbn').BigInteger;
 //import BigInteger from 'BigInt'
@@ -46,8 +47,12 @@ function App() {
               <PrivateRoute exact path="/tenant" component={TenantPage} />
               <PrivateRoute exact path="/landlord" component={LandlordPage} />
               <PrivateRoute exact path="/viewOwnerLease" component={ViewOwnerLease} />
-              <PrivateRoute exact path="/getDoorCode" component={GetDoorCode} />
+             
               <PrivateRoute exact path="/imageDisplay" component={ImageDisplay} />
+              <PrivateRoute exact path="/ViewTenants" component={ViewTenants} />
+              <PrivateRoute exact path="/ViewTenants" component={ViewTenants} />
+              <PrivateRoute exact path="/ViewTenantLease" component={ViewTenantLease} />
+              <PrivateRoute exact path="/TenantPayment" component={TenantPayment} />
             </Switch>
             
           </div>

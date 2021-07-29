@@ -1,16 +1,17 @@
-import { useStoreApi } from "../store/storeApi";
-import useWeb3 from "../utils/useWeb3";
+import { useStoreApi } from "../../store/storeApi";
+import useWeb3 from "../../utils/useWeb3";
 import { Button, TextField, makeStyles} from "@material-ui/core";
 import {useEffect,useState} from 'react';
 import Web3 from "web3";
-import NavBarTenant from "../pages/NavBarTenant";
-import LayoutTenant from "../components/LayoutTenant";
+import NavBarTenant from "./NavBarTenant";
+import LayoutTenant from "../../components/LayoutTenant";
 const moment=require('moment');
+import { useHistory } from 'react-router-dom';
 
 
 import uuid from "uuid/v4";
 
-const myContract=require('../contracts/houseLeaseConfig.json');
+const myContract=require('../../contracts/houseLeaseConfig.json');
 
 
 const useStyles = makeStyles((theme) =>({
@@ -42,6 +43,7 @@ const ViewLeases = () => {
     const { balance, address, message, setAddress, setBalance,settokenBalance,tokenBalance } = useStoreApi();
     const web3js = useWeb3();
     var web3;
+    const history = useHistory();
     
     const [final_arr_object,setArr]=useState(null);
 
@@ -68,6 +70,7 @@ const ViewLeases = () => {
         var id=0
         var promises=[];
         var arr_object=[];
+        var code;
 
         var res1=await contract.methods.listAllLeaseIds().call()    //array of leaseIds
 
@@ -77,9 +80,10 @@ const ViewLeases = () => {
         promises.push(contract.methods.getLeaseData(leaseId).call().then(lease_info=>{
       
           id=id+1
-        
+         
          var datetime=moment.unix(lease_info.timestamp).format("dddd MMMM Do YYYY, h:mm:ss a")
-         var new_object={"id":id,"leaseId":leaseId,"uid":lease_info.uid,"landlordName":lease_info.landlordName,"home_addr":lease_info.home_addr,"lease_expiry":datetime,"price":lease_info.value}
+         
+         var new_object={"id":id,"leaseId":leaseId,"landlordName":lease_info.landlordName,"home_addr":lease_info.home_addr,"lease_expiry":datetime,"price":lease_info.value}
         arr_object.push(new_object)
 
 
@@ -99,17 +103,7 @@ const ViewLeases = () => {
         }
 
     
-    const makePayment=async(leaseId)=>{
-
-      var contract=new web3js.eth.Contract(myContract.abi,myContract.contract_address)
-
-        const tenantName="Hafiz"
-        const tenant_uid="3Hz1jaYhetOtRP3EvCPNHDCFpdw2"
-
-        await contract.methods.makePayment(tenant_uid,leaseId,tenantName).send({
-        from:address
-    })
-    }
+    
 
 
         useEffect(()=>{
@@ -140,12 +134,16 @@ const ViewLeases = () => {
           <p>
         
         <Button
-          onClick={() => makePayment(object.leaseId) }
+          onClick={() => history.push({
+            pathname: '/TenantPayment',
+              state: {"leaseId":object.leaseId} // your data array of objects
+          }) }
           variant="outlined"
           color="primary"
           
+          
         >
-          Make Payment
+         Go To Payments Page
         </Button></p>
         </div>
       ))}

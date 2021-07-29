@@ -3,25 +3,23 @@ import {Card,Button,TextField,CardHeader,CardContent,IconButton,Typography} from
 
 import DeleteOutlined from '@material-ui/icons/DeleteOutlined'
 
-export default function ObjectCard({ note, handleDelete,setDoorCode }) {
+export default function TenantCard({ note, setDoorCode }) {
   return (
     <div>
       <Card elevation={1}>
         <CardHeader
-          action={
-            <IconButton onClick={() => handleDelete(note.id)}>
-              <DeleteOutlined />
-            </IconButton>
-          }
-          title={note.leaseId}
+         
+          title={note.tenantName}
           
         />
         <CardContent>
-        <p> { note.home_addr }</p>
-        <p> { note.lease_expiry }</p>
-        <p> { note.price/Math.pow(10,18) }</p>
+        
+        <p> { note.age }</p>
+        <p> { note.race }</p>
+        <p> { note.tenant_wallet_address }</p>
+       
 
-        <form onSubmit={e => setDoorCode(e,note.leaseId)}>
+        <form onSubmit={e => setDoorCode(e,note.leaseId,note.tenant_wallet_address)}>
         <p>
         <TextField
             required

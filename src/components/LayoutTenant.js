@@ -5,7 +5,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useHistory, useLocation } from 'react-router-dom'
-import NavBarTenant from "../pages/NavBarTenant";
+import NavBarTenant from "../pages/Tenant/NavBarTenant";
 
 //import { AddCircleOutlineOutlined, SubjectOutlined } from '@material-ui/icons'
 

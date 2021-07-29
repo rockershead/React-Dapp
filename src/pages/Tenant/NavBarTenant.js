@@ -9,7 +9,8 @@ const NavBarTenant  = () => {
          <div className="links">
          <a href="/home">Home</a>
          <Link to="/viewLease">View Leases</Link>
-         <Link to="/getDoorCode">Get Door Code</Link>
+        
+         <Link to="/ViewTenantLease">View My Lease</Link>
          
          </div>
 
